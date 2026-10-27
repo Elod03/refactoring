@@ -1,16 +1,17 @@
 package fr.efrei.transfret;
 
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Dates {
 
-    public static SimpleDateFormat FORMAT_DATE = new SimpleDateFormat("dd/MM/yyyy");
+    private static final DateTimeFormatter FORMAT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static String formater(Date d) {
         if (d == null) {
             return "";
         }
-        return FORMAT_DATE.format(d);
+        return FORMAT_DATE.format(d.toInstant().atZone(ZoneId.systemDefault()));
     }
 }

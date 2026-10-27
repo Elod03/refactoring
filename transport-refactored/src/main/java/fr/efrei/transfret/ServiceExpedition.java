@@ -3,7 +3,6 @@ package fr.efrei.transfret;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 public class ServiceExpedition {
 
@@ -11,22 +10,32 @@ public class ServiceExpedition {
 
     private static final double COEF_TTC = 1.2;
     private static final double TAUX_FRAIS_ANNULATION = 0.5;
-    private static final int SUFFIXE_ID_MIN = 1000;
-    private static final int SUFFIXE_ID_PLAGE = 9000;
 
     private static final double KM_PAR_MILLE_NAUTIQUE = 1.852;
     private static final int ROULAGE_PISTE_KM = 2;
     private static final int ALTITUDE_CROISIERE_PIEDS = 35000;
     private static final double TEMPERATURE_REFRIGERATION = 4;
 
-    public static int compteur = 0;
+    private final ExpeditionRepository expeditions;
+    private final CalculateurPrix calculateur;
+    private final AffectationVehicule affectation;
+    private final ValidateurExpedition validateur;
+    private final EstimateurDelai estimateurDelai;
+    private final Notificateur notificateur;
+    private final GenerateurIdExpedition generateurId;
 
-    private Database db = Database.getInstance();
-    private CalculateurPrix calculateur = new CalculateurPrix();
-    private AffectationVehicule affectation = new AffectationVehicule();
-    private ValidateurExpedition validateur = new ValidateurExpedition();
-    private EstimateurDelai estimateurDelai = new EstimateurDelai();
-    private Notificateur notificateur = new Notificateur();
+    public ServiceExpedition(ExpeditionRepository expeditions, CalculateurPrix calculateur,
+                             AffectationVehicule affectation, ValidateurExpedition validateur,
+                             EstimateurDelai estimateurDelai, Notificateur notificateur,
+                             GenerateurIdExpedition generateurId) {
+        this.expeditions = expeditions;
+        this.calculateur = calculateur;
+        this.affectation = affectation;
+        this.validateur = validateur;
+        this.estimateurDelai = estimateurDelai;
+        this.notificateur = notificateur;
+        this.generateurId = generateurId;
+    }
 
     public Expedition creerExpedition(Client client, List<Colis> colis, String villeDepart, String villeArrivee, ModeTransport mode, boolean urgent, boolean assurance) {
         if (!validateur.valider(client, colis, mode, urgent)) {
@@ -48,8 +57,7 @@ public class ServiceExpedition {
         }
 
         Expedition e = new Expedition();
-        compteur++;
-        e.setId("EXP-" + compteur + "-" + (SUFFIXE_ID_MIN + new Random().nextInt(SUFFIXE_ID_PLAGE)));
+        e.setId(generateurId.suivant());
         e.setClient(client);
         e.setColis(colis);
         e.setVilleDepart(villeDepart);
@@ -68,7 +76,7 @@ public class ServiceExpedition {
         cal.add(Calendar.DAY_OF_MONTH, estimateurDelai.estimer(distance, mode, urgent));
         e.setDateLivraisonPrevue(cal.getTime());
 
-        db.sauvegarderExpedition(e);
+        expeditions.sauvegarder(e);
         notificateur.expeditionCreee(e);
         return e;
     }
@@ -82,7 +90,7 @@ public class ServiceExpedition {
     }
 
     public boolean demarrerExpedition(String id) {
-        Expedition e = db.trouverExpedition(id);
+        Expedition e = expeditions.trouver(id);
         if (e == null || e.getStatut() != StatutExpedition.CREEE) {
             System.out.println("ERREUR : impossible de démarrer l'expédition " + id);
             return false;
@@ -105,26 +113,26 @@ public class ServiceExpedition {
         if (TypeMarchandise.REFRIGERE.estPresentDans(e.getColis())) {
             v.activerRefrigeration(TEMPERATURE_REFRIGERATION);
         }
-        db.mettreAJourStatut(e);
+        expeditions.mettreAJour(e);
         notificateur.expeditionPartie(e);
         return true;
     }
 
     public boolean livrerExpedition(String id) {
-        Expedition e = db.trouverExpedition(id);
+        Expedition e = expeditions.trouver(id);
         if (e == null || e.getStatut() != StatutExpedition.EN_COURS) {
             System.out.println("ERREUR : impossible de livrer l'expédition " + id);
             return false;
         }
         e.setStatut(StatutExpedition.LIVREE);
         libererVehicule(e);
-        db.mettreAJourStatut(e);
+        expeditions.mettreAJour(e);
         notificateur.expeditionLivree(e);
         return true;
     }
 
     public boolean annulerExpedition(String id) {
-        Expedition e = db.trouverExpedition(id);
+        Expedition e = expeditions.trouver(id);
         if (e == null || e.getStatut() == StatutExpedition.LIVREE || e.getStatut() == StatutExpedition.ANNULEE) {
             System.out.println("ERREUR : impossible d'annuler l'expédition " + id);
             return false;
@@ -134,7 +142,7 @@ public class ServiceExpedition {
         }
         e.setStatut(StatutExpedition.ANNULEE);
         libererVehicule(e);
-        db.mettreAJourStatut(e);
+        expeditions.mettreAJour(e);
         notificateur.expeditionAnnulee(e);
         return true;
     }

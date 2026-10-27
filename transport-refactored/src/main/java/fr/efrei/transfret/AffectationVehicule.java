@@ -4,6 +4,12 @@ import java.util.List;
 
 public class AffectationVehicule {
 
+    private final Flotte flotte;
+
+    public AffectationVehicule(Flotte flotte) {
+        this.flotte = flotte;
+    }
+
     public Vehicule trouverVehicule(List<Colis> colis, ModeTransport mode) {
         double poids = 0;
         for (Colis c : colis) {
@@ -11,7 +17,7 @@ public class AffectationVehicule {
         }
         boolean dangereux = TypeMarchandise.DANGEREUX.estPresentDans(colis);
         boolean refrigere = TypeMarchandise.REFRIGERE.estPresentDans(colis);
-        for (Vehicule v : Flotte.vehicules) {
+        for (Vehicule v : flotte.getVehicules()) {
             if (!v.estDisponible()) continue;
             if (v.getCapaciteMax() - v.getChargeActuelle() < poids) continue;
             if (mode == ModeTransport.ROUTE) {

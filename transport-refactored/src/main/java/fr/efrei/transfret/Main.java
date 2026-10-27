@@ -6,9 +6,11 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        Flotte.initialiser();
-        ServiceClient serviceClient = new ServiceClient();
-        ServiceExpedition serviceExpedition = new ServiceExpedition();
+        Notificateur notificateur = new Notificateur(new EmailConsole(), new SmsConsole());
+        ServiceClient serviceClient = new ServiceClient(new ClientRepositoryEnMemoire(), new ValidateurClient(), notificateur);
+        ServiceExpedition serviceExpedition = new ServiceExpedition(new ExpeditionRepositoryEnMemoire(),
+                new CalculateurPrix(), new AffectationVehicule(Flotte.initiale()), new ValidateurExpedition(),
+                new EstimateurDelai(), notificateur, new GenerateurIdExpedition());
         GenerateurFacture generateurFacture = new GenerateurFacture();
 
         System.out.println("\n----- Clients -----");
