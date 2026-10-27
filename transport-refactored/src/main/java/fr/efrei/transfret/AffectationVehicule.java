@@ -6,13 +6,11 @@ public class AffectationVehicule {
 
     public Vehicule trouverVehicule(List<Colis> colis, ModeTransport mode) {
         double poids = 0;
-        boolean dangereux = false;
-        boolean refrigere = false;
         for (Colis c : colis) {
             poids = poids + c.getPoids();
-            if (c.getType() == TypeMarchandise.DANGEREUX) dangereux = true;
-            if (c.getType() == TypeMarchandise.REFRIGERE) refrigere = true;
         }
+        boolean dangereux = TypeMarchandise.DANGEREUX.estPresentDans(colis);
+        boolean refrigere = TypeMarchandise.REFRIGERE.estPresentDans(colis);
         for (Vehicule v : Flotte.vehicules) {
             if (!v.estDisponible()) continue;
             if (v.getCapaciteMax() - v.getChargeActuelle() < poids) continue;

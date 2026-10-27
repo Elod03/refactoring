@@ -33,16 +33,10 @@ public class CalculateurPrix {
         double poids = 0;
         double volume = 0;
         double valeur = 0;
-        boolean fragile = false;
-        boolean dangereux = false;
-        boolean refrigere = false;
         for (Colis c : colis) {
             poids = poids + c.getPoids();
             volume = volume + c.getVolume();
             valeur = valeur + c.getValeurDeclaree();
-            if (c.getType() == TypeMarchandise.FRAGILE) fragile = true;
-            if (c.getType() == TypeMarchandise.DANGEREUX) dangereux = true;
-            if (c.getType() == TypeMarchandise.REFRIGERE) refrigere = true;
         }
 
         double prix = switch (mode) {
@@ -55,9 +49,9 @@ public class CalculateurPrix {
             }
         };
 
-        if (fragile) prix = prix * COEF_FRAGILE;
-        if (dangereux) prix = prix * COEF_DANGEREUX;
-        if (refrigere) prix = prix * COEF_REFRIGERE;
+        if (TypeMarchandise.FRAGILE.estPresentDans(colis)) prix = prix * COEF_FRAGILE;
+        if (TypeMarchandise.DANGEREUX.estPresentDans(colis)) prix = prix * COEF_DANGEREUX;
+        if (TypeMarchandise.REFRIGERE.estPresentDans(colis)) prix = prix * COEF_REFRIGERE;
         if (urgent) prix = prix * COEF_URGENCE;
 
         if (typeClient == TypeClient.ENTREPRISE) {
@@ -73,6 +67,6 @@ public class CalculateurPrix {
         if (assurance) {
             prix = prix + Math.max(valeur * TAUX_ASSURANCE, MINIMUM_ASSURANCE);
         }
-        return Utils.arrondir(prix);
+        return Montants.arrondir(prix);
     }
 }
