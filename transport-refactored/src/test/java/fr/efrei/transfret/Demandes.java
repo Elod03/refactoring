@@ -24,6 +24,11 @@ final class Demandes {
         return demande(TypeMarchandise.STANDARD, 1000, false, false, typeClient);
     }
 
+    static DemandePrix horsGabarit() {
+        List<Colis> colis = List.of(new Colis("colis", 50, 250, 50, 50, TypeMarchandise.STANDARD, 1000));
+        return new DemandePrix(colis, 100, ModeTransport.ROUTE, false, false, TypeClient.PARTICULIER);
+    }
+
     private static DemandePrix demande(TypeMarchandise type, double valeurDeclaree, boolean urgent, boolean assurance,
                                        TypeClient typeClient) {
         List<Colis> colis = List.of(new Colis("colis", 50, 50, 50, 50, type, valeurDeclaree));

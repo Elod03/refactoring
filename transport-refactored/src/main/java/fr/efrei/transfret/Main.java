@@ -9,7 +9,7 @@ public class Main {
         Notificateur notificateur = new Notificateur(new EmailConsole(), new SmsConsole());
         ServiceClient serviceClient = new ServiceClient(new ClientRepositoryEnMemoire(), new ValidateurClient(), notificateur);
         ServiceExpedition serviceExpedition = new ServiceExpedition(new ExpeditionRepositoryEnMemoire(),
-                new CalculateurPrix(AssemblagePrix.standard()), new AffectationVehicule(Flotte.initiale()), new ValidateurExpedition(),
+                new CalculateurPrix(AssemblagePrix.avecHorsGabarit()), new AffectationVehicule(Flotte.initiale()), new ValidateurExpedition(),
                 new EstimateurDelai(), notificateur, new GenerateurIdExpedition());
         GenerateurFacture generateurFacture = new GenerateurFacture();
 

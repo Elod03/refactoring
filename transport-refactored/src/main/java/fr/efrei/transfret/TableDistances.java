@@ -23,6 +23,8 @@ public class TableDistances {
             return 760;
         } else if ((a.equals("PARIS") && b.equals("NEW YORK")) || (a.equals("NEW YORK") && b.equals("PARIS"))) {
             return 5840;
+        } else if ((a.equals("PARIS") && b.equals("LE HAVRE")) || (a.equals("LE HAVRE") && b.equals("PARIS"))) {
+            return 365;
         }
         return DISTANCE_INCONNUE;
     }

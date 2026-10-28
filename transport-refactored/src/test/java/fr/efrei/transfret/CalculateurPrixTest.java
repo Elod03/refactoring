@@ -14,4 +14,11 @@ class CalculateurPrixTest {
         double prix = new CalculateurPrix(AssemblagePrix.standard()).calculerPrixHT(colis, 3000, ModeTransport.ROUTE, true, true, TypeClient.ENTREPRISE);
         assertEquals(5493.16, prix, 0.001);
     }
+
+    @Test
+    void appliqueLeHorsGabaritDansLAssemblageComplet() {
+        List<Colis> colis = List.of(new Colis("poutre", 100, 250, 50, 50, TypeMarchandise.STANDARD, 100));
+        double prix = new CalculateurPrix(AssemblagePrix.avecHorsGabarit()).calculerPrixHT(colis, 100, ModeTransport.ROUTE, false, false, TypeClient.PARTICULIER);
+        assertEquals(143, prix, 0.001);
+    }
 }
