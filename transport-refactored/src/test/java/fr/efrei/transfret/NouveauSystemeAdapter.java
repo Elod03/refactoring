@@ -38,7 +38,7 @@ public class NouveauSystemeAdapter implements SystemeTransport {
         sms = new SmsConsole();
         Notificateur notificateur = new Notificateur(emails, sms);
         serviceClient = new ServiceClient(clients, new ValidateurClient(), notificateur);
-        serviceExpedition = new ServiceExpedition(expeditions, new CalculateurPrix(),
+        serviceExpedition = new ServiceExpedition(expeditions, new CalculateurPrix(AssemblagePrix.standard()),
                 new AffectationVehicule(Flotte.initiale()), new ValidateurExpedition(), new EstimateurDelai(),
                 notificateur, new GenerateurIdExpedition());
         generateurFacture = new GenerateurFacture();
