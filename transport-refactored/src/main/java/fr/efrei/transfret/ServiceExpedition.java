@@ -11,11 +11,6 @@ public class ServiceExpedition {
     private static final double COEF_TTC = 1.2;
     private static final double TAUX_FRAIS_ANNULATION = 0.5;
 
-    private static final double KM_PAR_MILLE_NAUTIQUE = 1.852;
-    private static final int ROULAGE_PISTE_KM = 2;
-    private static final int ALTITUDE_CROISIERE_PIEDS = 35000;
-    private static final double TEMPERATURE_REFRIGERATION = 4;
-
     private final ExpeditionRepository expeditions;
     private final CalculateurPrix calculateur;
     private final AffectationVehicule affectation;
@@ -96,23 +91,8 @@ public class ServiceExpedition {
             return false;
         }
         e.setStatut(StatutExpedition.EN_COURS);
-        Vehicule v = e.getVehicule();
-        v.setDisponible(false);
-        try {
-            v.faireLePlein();
-        } catch (Exception ex) {
-        }
-        switch (e.getMode()) {
-            case ROUTE, RAIL -> v.rouler(e.getDistance());
-            case MER -> v.naviguer((int) (e.getDistance() / KM_PAR_MILLE_NAUTIQUE));
-            case AIR -> {
-                v.rouler(ROULAGE_PISTE_KM);
-                v.voler(ALTITUDE_CROISIERE_PIEDS);
-            }
-        }
-        if (TypeMarchandise.REFRIGERE.estPresentDans(e.getColis())) {
-            v.activerRefrigeration(TEMPERATURE_REFRIGERATION);
-        }
+        e.getVehicule().setDisponible(false);
+        e.getVehicule().partir(e.getDistance());
         expeditions.mettreAJour(e);
         notificateur.expeditionPartie(e);
         return true;

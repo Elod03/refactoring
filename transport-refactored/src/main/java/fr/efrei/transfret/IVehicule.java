@@ -1,5 +1,7 @@
 package fr.efrei.transfret;
 
+import java.util.List;
+
 public interface IVehicule {
 
     String getImmatriculation();
@@ -16,15 +18,7 @@ public interface IVehicule {
 
     void decharger(Colis colis);
 
-    void rouler(int km);
+    boolean peutTransporter(List<Colis> colis, ModeTransport mode);
 
-    void naviguer(int milesNautiques);
-
-    void voler(int altitude);
-
-    void activerRefrigeration(double temperature);
-
-    boolean peutTransporterMatieresDangereuses();
-
-    void faireLePlein();
+    void partir(int distance);
 }

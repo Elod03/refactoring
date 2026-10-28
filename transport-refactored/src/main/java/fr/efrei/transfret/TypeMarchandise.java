@@ -26,4 +26,13 @@ public enum TypeMarchandise {
         }
         return false;
     }
+
+    public boolean estSeulDans(List<Colis> colis) {
+        for (Colis c : colis) {
+            if (c.getType() != this) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
