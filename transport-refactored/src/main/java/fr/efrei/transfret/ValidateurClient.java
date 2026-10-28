@@ -14,7 +14,7 @@ public class ValidateurClient {
         if (type == null) {
             return refuser("type de client inconnu");
         }
-        if (type == TypeClient.ENTREPRISE && (siret == null || siret.length() != LONGUEUR_SIRET)) {
+        if (type.exigeSiret() && (siret == null || siret.length() != LONGUEUR_SIRET)) {
             return refuser("SIRET obligatoire (14 chiffres) pour une entreprise");
         }
         return true;
